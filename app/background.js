@@ -4353,29 +4353,29 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const isProd = "development" === 'production';
+const isProd = "development" === "production";
 if (isProd) {
   electron_serve__WEBPACK_IMPORTED_MODULE_1___default()({
-    directory: 'app'
+    directory: "app"
   });
 } else {
-  electron__WEBPACK_IMPORTED_MODULE_0__.app.setPath('userData', `${electron__WEBPACK_IMPORTED_MODULE_0__.app.getPath('userData')} (development)`);
+  electron__WEBPACK_IMPORTED_MODULE_0__.app.setPath("userData", `${electron__WEBPACK_IMPORTED_MODULE_0__.app.getPath("userData")} (development)`);
 }
 (async () => {
   await electron__WEBPACK_IMPORTED_MODULE_0__.app.whenReady();
-  const mainWindow = (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.createWindow)('main', {
+  const mainWindow = (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.createWindow)("main", {
     width: 1000,
     height: 600
   });
   if (isProd) {
-    await mainWindow.loadURL('app://./home.html');
+    await mainWindow.loadURL("app://./home.html");
   } else {
     const port = process.argv[2];
     await mainWindow.loadURL(`http://localhost:${port}/home`);
     mainWindow.webContents.openDevTools();
   }
 })();
-electron__WEBPACK_IMPORTED_MODULE_0__.app.on('window-all-closed', () => {
+electron__WEBPACK_IMPORTED_MODULE_0__.app.on("window-all-closed", () => {
   electron__WEBPACK_IMPORTED_MODULE_0__.app.quit();
 });
 })();

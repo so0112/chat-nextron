@@ -18,13 +18,14 @@ export default function App() {
   console.log(watch("example")); // watch input value by passing the name of it
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen p-6">
-      <div className="w-10/12 mx-auto md:w-96">
+    <div className="flex flex-col items-center justify-center h-screen">
+      <div className="m-auto">
         <h1 className="mb-2 text-lg font-medium">로그인</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div>
             <input
-              className="mb-1 border-black border-2"
+              placeholder="이메일"
+              className="w-60 mb-2 border-black border-2 p-1"
               defaultValue=""
               {...register("example")}
             />
@@ -32,18 +33,20 @@ export default function App() {
 
           <div>
             <input
-              className="mb-1 border-black border-2"
+              placeholder="비밀번호"
+              className="w-60 mb-2 border-black border-2 p-1"
               {...register("exampleRequired", { required: true })}
             />
           </div>
-          {errors.exampleRequired && (
+
+          {/* {errors.exampleRequired && (
             <div>
-              <small className="font-medium text-red-500">값을 넣어라</small>
+              <small className="font-medium text-red-500">input 값을 모두 채워주세요</small>
             </div>
-          )}
+          )} */}
 
           <input
-            className="w-20 py-2 mb-1 text-xs font-bold text-white uppercase bg-gray-400 border border-gray-400 rounded"
+            className="w-60 py-2 mb-1 text-xs font-bold text-white uppercase bg-gray-400 border border-gray-400 rounded"
             type="submit"
           />
         </form>
