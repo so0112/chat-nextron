@@ -20,16 +20,18 @@ export default function App() {
   } = useForm<Inputs>({ mode: "onChange" });
 
   const [erorFromSubmit, setErorFromSubmit] = useState("");
-
+  const [loading, setLoading] = useState(false);
   const password = useRef<string>();
   password.current = watch("password");
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
+      setLoading(true);
       let createdUser = await createUserWithEmailAndPassword(auth, data.email, data.password);
-      console.log(createdUser);
+      setLoading(false);
     } catch (error) {
       setErorFromSubmit(error.message);
+      setLoading(false);
       setTimeout(() => {
         setErorFromSubmit("");
       }, 5000);
@@ -48,7 +50,7 @@ export default function App() {
             {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
           />
 
-          {errors.email && <small className="mb-1 text-red-400">올바른 이메일을 입력해주세요</small>}
+          {errors.email && <small className="mb-1 text-red-400">올바른 이메일을 입력해주세요 (@ 포함)</small>}
 
           <input
             placeholder="닉네임"
@@ -100,7 +102,8 @@ export default function App() {
           {erorFromSubmit && <small>{erorFromSubmit}</small>}
 
           <input
-            className="w-60 py-2 mb-1 text-xs font-bold text-white uppercase bg-gray-400 border border-gray-400 rounded"
+            disabled={loading}
+            className="w-60 py-2 mb-1 font-bold text-white bg-gray-400 rounded cursor-pointer"
             type="submit"
           />
         </form>
