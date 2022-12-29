@@ -1,6 +1,8 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { auth } from "../firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 type Inputs = {
   email: string;
@@ -16,13 +18,23 @@ export default function App() {
     watch,
     formState: { errors },
   } = useForm<Inputs>({ mode: "onChange" });
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+
+  const [erorFromSubmit, setErorFromSubmit] = useState("");
 
   const password = useRef<string>();
   password.current = watch("password");
-  console.log(password.current);
 
-  console.log(watch("email"));
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    try {
+      let createdUser = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      console.log(createdUser);
+    } catch (error) {
+      setErorFromSubmit(error.message);
+      setTimeout(() => {
+        setErorFromSubmit("");
+      }, 5000);
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
@@ -36,11 +48,7 @@ export default function App() {
             {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
           />
 
-          {errors.email && (
-            <small className="mb-1 text-red-400">
-              올바른 이메일을 입력해주세요
-            </small>
-          )}
+          {errors.email && <small className="mb-1 text-red-400">올바른 이메일을 입력해주세요</small>}
 
           <input
             placeholder="닉네임"
@@ -53,9 +61,7 @@ export default function App() {
           )}
 
           {errors.nickname && errors.nickname.type === "maxLength" && (
-            <small className="mb-1 text-red-400">
-              10자 이내의 닉네임을 사용해주세요
-            </small>
+            <small className="mb-1 text-red-400">10자 이내의 닉네임을 사용해주세요</small>
           )}
 
           <input
@@ -70,9 +76,7 @@ export default function App() {
           )}
 
           {errors.password && errors.password.type === "minLength" && (
-            <small className="mb-1 text-red-400">
-              비밀번호는 최소 8자 이상입니다
-            </small>
+            <small className="mb-1 text-red-400">비밀번호는 최소 8자 이상입니다</small>
           )}
 
           <input
@@ -86,14 +90,14 @@ export default function App() {
           />
 
           {errors.passwordCheck && errors.passwordCheck.type === "required" && (
-            <small className="mb-1 text-red-400">
-              비밀번호 확인을 입력해주세요
-            </small>
+            <small className="mb-1 text-red-400">비밀번호 확인을 입력해주세요</small>
           )}
 
           {errors.passwordCheck && errors.passwordCheck.type === "validate" && (
             <small className="mb-1 text-red-400">비밀번호가 다릅니다</small>
           )}
+
+          {erorFromSubmit && <small>{erorFromSubmit}</small>}
 
           <input
             className="w-60 py-2 mb-1 text-xs font-bold text-white uppercase bg-gray-400 border border-gray-400 rounded"
