@@ -1,10 +1,11 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { useRouter } from "next/router";
 import { auth } from "../firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import md5 from "md5";
-import { child, getDatabase, ref, set } from "firebase/database";
+import { getDatabase, ref, set } from "firebase/database";
 
 type Inputs = {
   email: string;
@@ -13,13 +14,15 @@ type Inputs = {
   passwordCheck: string;
 };
 
-export default function App() {
+export default function Register() {
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm<Inputs>({ mode: "onChange" });
+
+  const router = useRouter();
 
   const [erorFromSubmit, setErorFromSubmit] = useState("");
   const [loading, setLoading] = useState(false);
@@ -38,6 +41,7 @@ export default function App() {
         photoURL: `http:gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`,
       });
 
+      //콘솔로그
       console.log(createdUser);
 
       const db = getDatabase();
@@ -48,6 +52,7 @@ export default function App() {
       });
 
       setLoading(false);
+      router.push("/login");
     } catch (error) {
       if (error.message === ALREADY_USE) {
         setErorFromSubmit("이미 사용중인 이메일입니다.");

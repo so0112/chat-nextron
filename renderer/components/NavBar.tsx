@@ -6,8 +6,8 @@ const NavBar: React.FC = () => {
   return (
     <div className="fixed inset-x-0 top-0 z-10 flex items-center justify-between px-5 h-16 bg-gray-200">
       <span className="text-2xl font-semibold text-gray-400">
-        <Link href="/home">
-          <a>home</a>
+        <Link href="/chat">
+          <a>HOME</a>
         </Link>
       </span>
 
@@ -19,9 +19,7 @@ const NavBar: React.FC = () => {
             </a>
           </Link>
           <Link href="/register">
-            <a className="w-20 px-2 pt-1 text-sm text-center text-white bg-gray-400 rounded h-7">
-              회원가입
-            </a>
+            <a className="w-20 px-2 pt-1 text-sm text-center text-white bg-gray-400 rounded h-7">회원가입</a>
           </Link>
         </>
       </div>
