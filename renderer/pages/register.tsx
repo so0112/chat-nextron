@@ -2,11 +2,13 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { auth } from "../firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import md5 from "md5";
+import { child, getDatabase, ref, set } from "firebase/database";
 
 type Inputs = {
   email: string;
-  nickname: string;
+  name: string;
   password: string;
   passwordCheck: string;
 };
@@ -24,13 +26,32 @@ export default function App() {
   const password = useRef<string>();
   password.current = watch("password");
 
+  const ALREADY_USE = "Firebase: Error (auth/email-already-in-use).";
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
       setLoading(true);
       let createdUser = await createUserWithEmailAndPassword(auth, data.email, data.password);
+
+      await updateProfile(auth.currentUser, {
+        displayName: data.name,
+        photoURL: `http:gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`,
+      });
+
+      console.log(createdUser);
+
+      const db = getDatabase();
+      set(ref(db, `users/${createdUser.user.uid}`), {
+        username: data.name,
+        email: data.email,
+        profile_picture: createdUser.user.photoURL,
+      });
+
       setLoading(false);
     } catch (error) {
-      setErorFromSubmit(error.message);
+      if (error.message === ALREADY_USE) {
+        setErorFromSubmit("이미 사용중인 이메일입니다.");
+      }
       setLoading(false);
       setTimeout(() => {
         setErorFromSubmit("");
@@ -55,14 +76,14 @@ export default function App() {
           <input
             placeholder="닉네임"
             className="mb-1 p-1 border-2"
-            {...register("nickname", { required: true, maxLength: 10 })}
+            {...register("name", { required: true, maxLength: 10 })}
           />
 
-          {errors.nickname && errors.nickname.type === "required" && (
+          {errors.name && errors.name.type === "required" && (
             <small className="mb-1 text-red-400">닉네임을 입력해주세요</small>
           )}
 
-          {errors.nickname && errors.nickname.type === "maxLength" && (
+          {errors.name && errors.name.type === "maxLength" && (
             <small className="mb-1 text-red-400">10자 이내의 닉네임을 사용해주세요</small>
           )}
 
@@ -99,11 +120,11 @@ export default function App() {
             <small className="mb-1 text-red-400">비밀번호가 다릅니다</small>
           )}
 
-          {erorFromSubmit && <small>{erorFromSubmit}</small>}
+          {erorFromSubmit && <small className="mb-1 text-red-400">{erorFromSubmit}</small>}
 
           <input
             disabled={loading}
-            className="w-60 py-2 mb-1 font-bold text-white bg-gray-400 rounded cursor-pointer"
+            className="w-80 py-2 mb-1 font-bold text-white bg-gray-400 rounded cursor-pointer"
             type="submit"
           />
         </form>
